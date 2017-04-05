@@ -1,13 +1,17 @@
 
 //Button pins
-int redButton = A0;
-int greenButton = A1;
-int yellowButton = A2;
+int redButton = 2;
+int greenButton = 3;
+int yellowButton = 4;
 
 //Button States
 volatile int redPress = 0;
 volatile int greenPress = 0;
 volatile int yellowPress = 0;
+
+int redButtonState = 0;
+int greenButtonState = 0;
+int yellowButtonState = 0;
 
 //Servo
 #include <Servo.h>
@@ -22,8 +26,8 @@ void setup() {
   pinMode(greenButton, INPUT);
   pinMode(yellowButton, INPUT);
 
-  attachInterrupt(digitalPinToInterrupt(A2), buttonCheck, CHANGE);
-
+  attachInterrupt(digitalPinToInterrupt(2), redButtonCheck, RISING);
+  attachInterrupt(digitalPinToInterrupt(3), greenButtonCheck, RISING);
   
   boxLatch.attach(13);
 }
@@ -32,9 +36,8 @@ void loop() {
   // put your main code here, to run repeatedly:
   buttonCheck();
 
-  if (redPress >= 5 && greenPress >= 3 && yellowPress >= 8){
+  if (redPress >= 5 && greenPress >= 3){
     Serial.println("UNLOCKED");
-    
     for (pos = 0; pos <= 90; pos += 1) { 
     boxLatch.write(pos);              
     delay(1000); 
@@ -45,12 +48,24 @@ void loop() {
   delay(1);
 }
 
-void buttonCheck(){ 
-  int redButtonState = digitalRead(redButton); 
-  int greenButtonState = digitalRead(greenButton); 
-  int yellowButtonState = digitalRead(yellowButton); 
+void redButtonCheck(){
+  Serial.println("Red Button");
+  redPress++;
+  delay(1000);
+  }
 
-  digitalWrite(A2, yellowButtonState);
+void greenButtonCheck(){
+  Serial.println("Green Button");
+  greenPress++;
+  delay(1000);
+}
+
+void buttonCheck(){ 
+  redButtonState= digitalRead(redButton); 
+  greenButtonState = digitalRead(greenButton); 
+  yellowButtonState  = digitalRead(yellowButton); 
+
+  //digitalWrite(2, redButtonState);
 
 
 //  while (redButtonState == HIGH){
